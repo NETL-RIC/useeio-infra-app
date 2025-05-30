@@ -349,6 +349,7 @@ ui <- fluidPage(
                     value = "", width = NULL, placeholder = NULL),
           downloadButton("DownloadOpenLCA",
                          "Download Inventory in OpenLCA Format"),
+          # BUT: not rendering
           DT::dataTableOutput('impacts_table'),
           # BUG: undefined method
           # DT::dataTableOutput("full_inventory_table"),

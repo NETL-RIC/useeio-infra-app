@@ -4,7 +4,7 @@
 #
 # Authors: F. Bartram, M. Henriksen, D. Carlson, S. Matthews
 #
-# Last updated: 2025-05-21
+# Last updated: 2025-05-30
 #
 # Purpose: This project migrates the NETL Infrastructure version of the
 # U.S. Environmentally-Extended Input-Output (USSEIO) model from Excel to a
@@ -25,14 +25,13 @@
 # 2. Load libraries
 library(DT)
 library(SnowballC)
-# library(bigD)
 library(data.table)
 library(dplyr)
 library(ggplot2)
 library(glue)
-library(gt)
+library(gt)  # includes bigD and juicyjuice as dependencies
 library(here)
-# library(juicyjuice)
+# library(juicyjuice) # for axis subscripts?
 library(openxlsx)
 library(plotly)
 # library(plyr)
@@ -43,11 +42,10 @@ library(reshape2)
 library(scales) # provides hue_pal
 library(shiny)
 # library(shinyBS)
-# library(shinycssloaders)
-# library(shinyhttr)
+# library(shinyhttr) # for progress bar?
 # library(shinyWidgets)
 # library(tidyverse)
-library(tm)
+library(tm)  # text mining
 library(zip)
 
 # 3. Run shiny app
@@ -187,10 +185,16 @@ docsearch <- function(query) {
       return(tf.idf.vec)
     }
 
-    tfidf.matrix <- t(apply(term.doc.matrix, c(1), FUN = get.weights.per.term.vec))
+    tfidf.matrix <- t(apply(
+      term.doc.matrix, c(1), FUN = get.weights.per.term.vec
+    ))
     colnames(tfidf.matrix) <- colnames(term.doc.matrix)
 
-    tfidf.matrix <- scale(tfidf.matrix, center = FALSE, scale = sqrt(colSums(tfidf.matrix^2)))
+    tfidf.matrix <- scale(
+      tfidf.matrix,
+      center = FALSE,
+      scale = sqrt(colSums(tfidf.matrix^2))
+    )
 
     query.vector <- tfidf.matrix[, (N.docs + 1)]
     tfidf.matrix <- tfidf.matrix[, 1:N.docs]
@@ -215,7 +219,7 @@ docsearch <- function(query) {
   df_test4 <- search(query, doc.list4)
   colnames(df_test4)[2] <- "score_lit_others"
 
-  # Merge all dataframes to one
+  # Merge all data frames to one
   df_merged_nouns <- merge(df_test,
                            df_test2,
                            by = "doc",
@@ -237,7 +241,10 @@ docsearch <- function(query) {
   df_merged[is.na(df_merged)] <- 0
 
   # Apply weighting system (see documentation for explanation)
-  df_merged$score_weighted <- 6*df_merged$score_nouns + 8*df_merged$score_lit_nouns + df_merged$score_others + 6*df_merged$score_lit_others
+  df_merged$score_weighted <- 6 * df_merged$score_nouns +
+    8 * df_merged$score_lit_nouns +
+    df_merged$score_others +
+    6 * df_merged$score_lit_others
 
   # Order industries by decreasing score
   df_merged <- df_merged[order(df_merged$score_weighted, decreasing = TRUE), ]
@@ -525,7 +532,7 @@ server <- function(input, output, session) {
     req(input$file1)
     df <- read.csv(input$file1$datapath, header = TRUE, sep = input$sep)
 
-    for (i in seq_along(df)) {
+    for (i in seq_len(nrow(df))) {
       equipment_name <- df[i, 1]
       best_industries <- docsearch(equipment_name)
       ranked_industries = best_industries
@@ -651,18 +658,18 @@ server <- function(input, output, session) {
     if (r$entry == 1) {
       # File upload
       industries <- sapply(
-        seq_along(data()),
+        seq_len(nrow(data())),
         function(i) input[[paste0(get_sel_id(), i)]]
       )
 
       descriptions <- sapply(
-        seq_along(data()),
-        function(i) commodities[commodities[,2] == industries[i],5]
+        seq_len(nrow(data())),
+        function(i) commodities[commodities[, 2] == industries[i], 5]
       )
 
-      for (i in seq_along(data())) {
+      for (i in seq_len(nrow(data()))) {
         costs <- numeric(nrow(data()))
-        costs[i] <- data()[i,2]
+        costs[i] <- data()[i, 2]
         if (is.na(costs[i])) {
           costs[i] <- 0
         }
@@ -689,9 +696,11 @@ server <- function(input, output, session) {
 
   # Economic Calculations ------------------------------------------------------
 
-  # The total economic impact on each sector.
+  # The total economic impact on each sector; matrix array
   economic_result <- reactive({
     economic_result <- L %*% (y())
+    print("economic_result class")
+    print(class(economic_result))
     return(economic_result)
   })
 
@@ -996,11 +1005,13 @@ server <- function(input, output, session) {
   # industry.
   ghg_df <- reactive({
     ghg_df <- data.frame(
-      industry_codes,
-      industry_names,
-      economic_result(),
-      ghgs_total_100yr()
+      industry_codes = industry_codes,
+      industry_names = industry_names,
+      economic_result = economic_result(),
+      ghgs_total_100yr = ghgs_total_100yr()
     )
+    print("ghg_df columns:")
+    print(names(ghg_df))
     return(ghg_df)
   })
 
@@ -1008,10 +1019,12 @@ server <- function(input, output, session) {
   ghg_data_sorted <- reactive({
     ghg_data_sorted <- ghg_df()[
       order(
-        ghg_df()$ghgs_total_100yr..,
+        ghg_df()$ghgs_total_100yr,
         decreasing = TRUE
       ),
     ]
+    print("ghg_data_sorted class")
+    print(class(ghg_data_sorted))
     return(ghg_data_sorted)
   })
 
@@ -1045,6 +1058,8 @@ server <- function(input, output, session) {
     ghg_for_totals <- speciated_ghgs_100yr_unsorted()[, -1]
     rownames(ghg_for_totals) <-  speciated_ghgs_100yr_unsorted()[, 1]
     ghgs_total_100yr <- as.vector(rowSums(ghg_for_totals))
+    print("ghgs_total_100yr class")
+    print(class(ghgs_total_100yr))
     return(ghgs_total_100yr)
   })
 
@@ -1104,7 +1119,7 @@ server <- function(input, output, session) {
     # Sort ghg_df by the ghg column (sorting by 100 year GWP values to maintain
     # consistency).
     ghg_data_sorted_20yr <- ghg_df_20yr()[
-      order(ghg_df()$ghgs_total_100yr.., decreasing = TRUE),
+      order(ghg_df()$ghgs_total_100yr, decreasing = TRUE),
     ]
     return(ghg_data_sorted_20yr)
   })
@@ -1153,7 +1168,7 @@ server <- function(input, output, session) {
     download_table <- format(ghg_data_sorted, digits = 3)
     colnames(download_table) <- c(
       "Industry Code",
-      "Industry Name","Economic Impact (U.S. Dollars) 2012",
+      "Industry Name", "Economic Impact (U.S. Dollars) 2012",
       HTML(paste0(
         "Global Warming Potential (kg CO",
         tags$sub("2"),
@@ -1334,24 +1349,27 @@ server <- function(input, output, session) {
 
   # Non-GHG Impacts ----------------------------------------------------------
 
-  # Total impact Calculations
+  # Total impact Calculations; return as matrix
   impacts <- reactive({
     impacts <- N  %*% (economic_result())
     impacts <- cbind(impacts, units)
     impacts <- impacts[indicators_specific, ]
+    impacts <- as.data.frame(impacts)
     colnames(impacts) <- c("Amount", "Unit")
     return(impacts)
   })
 
+  # BUG:
   # Table for total impacts
   output$impacts_table <- renderDataTable({
     message("Preparing impacts...")
     impacts <- impacts()
+    req(impacts)  # Silently cancels the table, but doesn't fix the problem.
     impacts[, 1] <-  signif((as.numeric(impacts[, 1])), 3)
     DT::datatable(
       impacts,
       caption = impacts_caption,
-      colnames <- c("Impact Category", "Amount", "Unit"),
+      colnames = c("Impact Category", "Amount", "Unit"),
     )
     message("... done!")
   })
@@ -1387,9 +1405,10 @@ server <- function(input, output, session) {
 
   # Impacts by industry and chemical species (used for below calculations)
   impacts_by_type <- reactive({
+    message("Retrieving impacts by type...")
     M <- M[colSums(c_indicators_specific) != 0, ]
     impacts_by_type <- data.frame(industry_names)
-    for (i in seq_along(M)) {
+    for (i in seq_len(nrow(M))) {
       speciesvec <- M[i, ]
       speciesM <- matrix(diag(speciesvec), ncol = 411)
       emissions_by_industry <- speciesM %*% (economic_result())
@@ -1398,7 +1417,7 @@ server <- function(input, output, session) {
     }
 
     # Sorting by 100 year GWP values to maintain consistency
-    impacts_by_type <- impacts_by_type[order(ghg_df()$ghgs_total_100yr..,
+    impacts_by_type <- impacts_by_type[order(ghg_df()$ghgs_total_100yr,
                                              decreasing = TRUE), ]
     rownames(impacts_by_type) <- impacts_by_type$industry_names
     impacts_by_type <- impacts_by_type[, -1]
@@ -1409,7 +1428,7 @@ server <- function(input, output, session) {
   full_inventory <- reactive({
     message("Preparing full inventory...")
     impacts_by_type <- data.frame(industry_names)
-    for (i in seq_along(M)) {
+    for (i in seq_len(nrow(M))) {
       speciesvec <- M[i, ]
       speciesM <- matrix(diag(speciesvec), ncol = 411)
       emissions_by_industry <- speciesM %*% (economic_result())
@@ -1421,7 +1440,7 @@ server <- function(input, output, session) {
     # Sorting by 100 year GWP values to maintain consistency
     impacts_by_type <- impacts_by_type[
       order(
-        ghg_df()$ghgs_total_100yr..,
+        ghg_df()$ghgs_total_100yr,
         decreasing = TRUE
       ),
     ]
@@ -1447,7 +1466,7 @@ server <- function(input, output, session) {
 
   # Acidification potential
   acid_ptnl <- reactive({
-
+    message("Retrieving acidification potential...")
     acid_ptnl_row <- C[1, ]
     acid_ptnl <-  acid_ptnl_row * t(impacts_by_type())
 
