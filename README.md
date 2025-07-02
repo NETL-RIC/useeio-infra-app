@@ -4,6 +4,57 @@ The USEEIO model is an open-source model developed and maintained by the Environ
 The USEEIO model incorporates environmental data into pre-existing Economic Input-Output Models, which look at the interdependence of different economic industries.
 This web app supports infrastructure applications, and the industry-mapping algorithm is tailored towards the use case of energy infrastructure; however, it can be used to implement USEEIO in any area for which this model is applicable.
 
+## Install and Run
+This web application was designed to run within a Docker container.
+The Dockerfile extends the rocker/shiny stack published by the Rocker Project (https://rocker-project.org/), installs the R library dependencies (as shown in the following table), and opens port 3838 on localhost, which is the server's port (as defined in run.R).
+
+| Package          | Description                                                                                                                                                                                                                                                                                                                                                              | URL                                      |
+| :--------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------- |
+| `shiny`          | A web application framework for R that allows you to build interactive web applications directly from R.                                                                                                                                                                                                                                                                  | [URL](https://www.rstudio.com/shiny/) |
+| `DT`             | An R interface to the DataTables JavaScript library, making it easy to display data frames and matrices as interactive HTML tables.                                                                                                                                                                                                                                      | [URL](https://rstudio.github.io/DT/) |
+| `SnowballC`      | Implements the Snowball stemming algorithm, which is used to reduce words to their base or root form.                                                                                                                                                                                                                                                                     | [URL](https://cran.r-project.org/web/packages/SnowballC/) |
+| `data.table`     | An extension of R's `data.frame` that provides high-performance enhancements for data manipulation, including fast aggregation, subsetting, and reshaping of large datasets.                                                                                                                                                                                             | [URL](https://r-datatable.com/) |
+| `dplyr`          | A grammar of data manipulation, providing a consistent set of verbs (functions) for common data wrangling tasks like filtering rows, selecting columns, arranging data, and summarizing.                                                                                                                                                                                   | [URL](https://dplyr.tidyverse.org/) |
+| `ggplot2`        | An elegant and versatile system for creating statistical graphics based on "The Grammar of Graphics." It allows for the creation of a wide variety of static plots.                                                                                                                                                                                                     | [URL](https://ggplot2.tidyverse.org/) |
+| `glue`           | Provides a simple way to create dynamic strings (string interpolation) by embedding R expressions directly within curly braces inside a string.                                                                                                                                                                                                                         | [URL](https://glue.tidyverse.org/) |
+| `gt`             | A package for easily creating information-rich, publication-quality tables from tabular data. It provides a highly customizable and flexible way to format tables.                                                                                                                                                                                                        | [URL](https://gt.rstudio.com/) |
+| `here`           | Helps with file path management by constructing paths in a robust and OS-independent way, relative to the project's root directory. This avoids common issues with hardcoding paths.                                                                                                                                                                                    | [URL](https://here.r-lib.org/) |
+| `openxlsx`       | Facilitates reading, writing, and editing of `.xlsx` files without the need for Java. It supports styling, formulas, and other Excel features.                                                                                                                                                                                                                          | [URL](https://cran.r-project.org/web/packages/openxlsx/) |
+| `plotly`         | An R wrapper for Plotly.js, allowing you to create interactive, web-based plots (e.g., scatter plots, line plots, 3D plots) that can be embedded in Shiny apps or standalone HTML files.                                                                                                                                                                                  | [URL](https://plotly.com/r/) |
+| `purrr`          | A complete and consistent functional programming toolkit for R. It provides tools for working with functions and vectors, making code more readable and robust.                                                                                                                                                                                                          | [URL](https://purrr.tidyverse.org/) |
+| `reactR`         | Provides an R interface to React, a JavaScript library for building user interfaces. It enables the use of React components within R and Shiny applications.                                                                                                                                                                                                             | [URL](https://cran.r-project.org/web/packages/reactR/) |
+| `readr`          | A fast and friendly way to read rectangular data (like CSV, TSV, and fixed-width files) into R. It's part of the Tidyverse and is optimized for performance and consistency.                                                                                                                                                                                              | [URL](https://readr.tidyverse.org/) |
+| `reshape2`       | A package for flexibly reshaping data between wide and long formats. It provides the `melt` and `dcast`/`acast` functions, which are fundamental for data transformation.                                                                                                                                                                                                | [URL](https://cran.r-project.org/web/packages/reshape2/) |
+| `scales`         | Provides a set of tools for creating nicely formatted breaks and labels for axes and legends in `ggplot2` and other plots. It helps control the appearance of numerical and categorical scales.                                                                                                                                                                              | [URL](https://scales.r-lib.org/) |
+| `tm`             | A comprehensive text mining framework for R, providing functionalities for text pre-processing (e.g., corpus creation, cleaning, stemming, tokenization) and analysis.                                                                                                                                                                                                     | [URL](https://cran.r-project.org/web/packages/tm/) |
+| `zip`            | Allows for the creation and extraction of zip archives within R. It's useful for bundling files or extracting data from compressed sources.                                                                                                                                                                                                                              | [URL](https://cran.r-project.org/web/packages/zip/) |
+| `shinycssloaders`| Adds loading animations to Shiny outputs, providing visual feedback to users while calculations or data loading are in progress. This improves the user experience by indicating that the app is working.                                                                                                                                                                   | [URL](https://cran.r-project.org/web/packages/shinycssloaders/) |
+| `shinyWidgets`   | A collection of custom input widgets and other tools designed to enhance Shiny applications, offering more diverse and visually appealing UI elements than the default Shiny widgets.                                                                                                                                                                                   | [URL](https://cran.r-project.org/web/packages/shinyWidgets/) |
+
+With Docker Desktop installed (https://www.docker.com/products/docker-desktop/), run the following command from the root folder of this repository to create the docker image:
+
+```bash
+docker build -t my-shiny-app .
+```
+
+To create the container, run the image, remembering to assign a host port (e.g., 3838) to bind to the container's internal port (i.e., 3838).
+While running, access the web app by navigating to the URL (e.g., http://localhost:3838), which will connect to the web app within the container.
+
+The original image may be archived for collaboration into a tarball using the following command:
+
+```bash
+docker save -o my-image.tar my-shiny-app
+```
+
+The image may be loaded into another Docker Desktop installation using the following command:
+
+```bash
+docker load -i my-image.tar
+```
+
+Follow the same instructions above to run the container.
+
+
 ## Overview
 In order to implement the USEEIO model, this application uses the *useeior* package \[1\] in the "R" Software platform.
 This package is used to generate the USEEIOv2.0.1-411 model, which is based on commodities, has 411 sectors, uses 2012 input-output data, and is based on 2012 US dollars.
