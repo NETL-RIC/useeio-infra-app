@@ -4,7 +4,7 @@ The USEEIO model is an open-source model developed and maintained by the Environ
 The USEEIO model incorporates environmental data into pre-existing Economic Input-Output Models, which look at the interdependence of different economic industries.
 This web app supports infrastructure applications, and the industry-mapping algorithm is tailored towards the use case of energy infrastructure; however, it can be used to implement USEEIO in any area for which this model is applicable.
 
-##**Disclaimer**
+## Disclaimer
 The United States Environmental Protection Agency (EPA) and National Energy Technology Lanboratory (NETL) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use. EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA. The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.
 
 ## Download Supporting Data
