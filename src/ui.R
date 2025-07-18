@@ -197,7 +197,11 @@ options(spinner.color = "#0275D8",
 
 ui <- fluidPage(
   # App title ----
-  titlePanel("USEEIO Web Application"),
+  div(
+    style = "display: flex; align-items: center; gap: 10px; margin-bottom: 20px;",
+    img(src = "useeio_logo.png", height = "150px"),  
+    h1("USEEIO Web Application")
+  ),
   tabsetPanel(
     mainPanel(
       tabsetPanel(id = "tabs",
