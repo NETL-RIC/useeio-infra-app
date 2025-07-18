@@ -20,6 +20,19 @@ input_folder <- here("src", "inputs")
 # Instructions
 
 # Home
+p0 <- "The United States Environmental Protection Agency (EPA) and 
+      National Energy Technology Lanboratory (NETL) GitHub project 
+      code is provided on an 'as is' basis and the user assumes 
+      responsibility for its use. EPA has relinquished control of the 
+      information and no longer has responsibility to protect the integrity, 
+      confidentiality, or availability of the information. 
+      Any reference to specific commercial products, processes, or services 
+      by service mark, trademark, manufacturer, or otherwise, does 
+      not constitute or imply their endorsement, recommendation or favoring 
+      by EPA. The EPA seal and logo shall not be used in any manner to 
+      imply endorsement of any commercial product or activity by EPA or 
+      the United States Government."
+
 p1 <- tagList(
   "This web application estimates the economic, greenhouse gas, and
    other environmental impacts across the supply chain of production.
@@ -189,6 +202,9 @@ ui <- fluidPage(
     mainPanel(
       tabsetPanel(id = "tabs",
         tabPanel("Home",
+          h1("Disclaimer"),
+          h4(p0),
+          h1("Introduction"),
           h4(p1),
           h4(p2),
           h4(p3),
