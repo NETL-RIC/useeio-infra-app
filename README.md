@@ -28,7 +28,7 @@ The Dockerfile extends the rocker/shiny stack published by the Rocker Project (h
 With Docker Desktop installed (https://www.docker.com/products/docker-desktop/), run the following command from the root folder of this repository to create the docker image:
 
 ```bash
-docker build -t my-shiny-app .
+docker build -t useeio-app .
 ```
 
 To create the container, run the image, remembering to assign a host port (e.g., 3838) to bind to the container's internal port (i.e., 3838).
@@ -37,7 +37,7 @@ While running, access the web app by navigating to the URL (e.g., http://localho
 The original image may be archived for collaboration into a tarball using the following command:
 
 ```bash
-docker save -o my-image.tar my-shiny-app
+docker save -o my-image.tar useeio-app
 ```
 
 The image may be loaded into another Docker Desktop installation using the following command:
