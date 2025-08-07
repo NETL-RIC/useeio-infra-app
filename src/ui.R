@@ -199,7 +199,7 @@ ui <- fluidPage(
   # App title ----
   div(
     style = "display: flex; align-items: center; gap: 10px; margin-bottom: 20px;",
-    img(src = "useeio_logo.png", height = "150px"),  
+    img(src = "images/useeio_logo.png", height = "150px"),  
     h1("USEEIO Web Application")
   ),
   tabsetPanel(
