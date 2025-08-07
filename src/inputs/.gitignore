@@ -1,4 +1,0 @@
-# Ignore everything but this file
-# To access input files, run download_edx.R
-*.*
-!.gitignore
