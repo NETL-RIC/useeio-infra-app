@@ -1736,10 +1736,10 @@ server <- function(input, output, session) {
 
   output$download_example <- downloadHandler(
     filename = function() {
-      "Example Upload.csv"
+      "ExampleUpload.csv"
     },
     content = function(file) {
-      file.copy(file.path(input_folder, "Example Upload.csv"), file)
+      file.copy(file.path(input_folder, "ExampleUpload.csv"), file)
     }
   )
 
